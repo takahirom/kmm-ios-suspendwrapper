@@ -59,19 +59,7 @@ class Processor : AbstractProcessor() {
 
         val annotatedElements = roundEnv.getElementsAnnotatedWith(WrapForIos::class.java)
 
-//        val generatedInterfacesFromAnnotatedInterfaces = annotatedElements
-//            .filter { it.kind.isInterface }
-//            .map { element ->
-//                generateInterfaceFromInterface(
-//                    element = element,
-//                    classInspector = classInspector,
-//                    targetDir = kaptGeneratedDir
-//                )
-//            }
-//            .toMap()
-
         annotatedElements
-            .filter { it.kind.isInterface }
             .forEach { element ->
                 generateWrappedClasses(
                     element = element,
@@ -179,8 +167,10 @@ class Processor : AbstractProcessor() {
                 .build()
                 .writeTo(File(kaptGeneratedDir))
 
-        }catch(e:Exception){
+        } catch (e:Exception) {
+            // For debug
             e.printStackTrace()
+            throw e
         }
 
     }
