@@ -1,4 +1,35 @@
-# SuspendWrapper
+# SuspendWrapper fork
+
+This is a fork project of "FutureMind/kmm-ios-suspendwrapper".
+
+Take the following inteface as an example.
+
+```kotlin
+@WrapForIos
+interface Api {
+  suspend fun test(): Hoge
+}
+```
+
+Original Behavior
+
+```kotlin
+interface ApiIos {
+  fun test() : SuspendWrapper<Hoge>
+}
+```
+
+Modified Behavior
+
+```kotlin
+class  ApiIos(val api: Api) {
+  fun test() : SuspendWrapper<Hoge> = SuspendWrapper { api.test() }
+}
+```
+
+
+# Original README
+
 
 Automatically generates wrappers for `suspend` functions and `Flow` for easy access from Swift code in Kotlin Multiplatform projects.
 
