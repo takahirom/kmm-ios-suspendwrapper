@@ -59,24 +59,23 @@ class Processor : AbstractProcessor() {
 
         val annotatedElements = roundEnv.getElementsAnnotatedWith(WrapForIos::class.java)
 
-        val generatedInterfacesFromAnnotatedInterfaces = annotatedElements
-            .filter { it.kind.isInterface }
-            .map { element ->
-                generateInterfaceFromInterface(
-                    element = element,
-                    classInspector = classInspector,
-                    targetDir = kaptGeneratedDir
-                )
-            }
-            .toMap()
+//        val generatedInterfacesFromAnnotatedInterfaces = annotatedElements
+//            .filter { it.kind.isInterface }
+//            .map { element ->
+//                generateInterfaceFromInterface(
+//                    element = element,
+//                    classInspector = classInspector,
+//                    targetDir = kaptGeneratedDir
+//                )
+//            }
+//            .toMap()
 
         annotatedElements
-            .filter { it.kind.isClass }
+            .filter { it.kind.isInterface }
             .forEach { element ->
                 generateWrappedClasses(
                     element = element,
                     classInspector = classInspector,
-                    generatedInterfacesNames = generatedInterfacesFromAnnotatedInterfaces,
                     scopeProviders = scopeProviders,
                     kaptGeneratedDir = kaptGeneratedDir
                 )
@@ -145,7 +144,6 @@ class Processor : AbstractProcessor() {
     private fun generateWrappedClasses(
         element: Element,
         classInspector: ClassInspector,
-        generatedInterfacesNames: Map<OriginalInterfaceName, GeneratedInterfaceName>,
         scopeProviders: Map<ClassName, PropertySpec>,
         kaptGeneratedDir: String
     ) {
@@ -167,23 +165,23 @@ class Processor : AbstractProcessor() {
             kaptGeneratedDir = kaptGeneratedDir
         )
 
-        val originalToGeneratedInterfaceName: OriginalToGeneratedInterfaceName? = typeSpec
-            .superinterfaces.keys
-            .matchGeneratedInterfaceName(generatedInterfacesNames)
+        try {
+            val classToGenerateSpec = WrapperClassBuilder(
+                wrappedClassName = originalClassName,
+                poetMetadataSpec = typeSpec,
+                newTypeName = generatedClassName,
+                interfaceGeneratedFromClass = interfaceFromClass,
+                scopeProviderSpec = obtainScopeProviderSpec(annotation, scopeProviders)
+            ).build()
 
-        val classToGenerateSpec = WrapperClassBuilder(
-            wrappedClassName = originalClassName,
-            poetMetadataSpec = typeSpec,
-            newTypeName = generatedClassName,
-            interfaceGeneratedFromClass = interfaceFromClass,
-            wrapperGeneratedInterface = originalToGeneratedInterfaceName,
-            scopeProviderSpec = obtainScopeProviderSpec(annotation, scopeProviders)
-        ).build()
+            FileSpec.builder(originalClassName.packageName, generatedClassName)
+                .addType(classToGenerateSpec)
+                .build()
+                .writeTo(File(kaptGeneratedDir))
 
-        FileSpec.builder(originalClassName.packageName, generatedClassName)
-            .addType(classToGenerateSpec)
-            .build()
-            .writeTo(File(kaptGeneratedDir))
+        }catch(e:Exception){
+            e.printStackTrace()
+        }
 
     }
 
