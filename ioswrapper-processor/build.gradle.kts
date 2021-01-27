@@ -49,26 +49,10 @@ kotlin {
 }
 
 publishing {
-
     publications.all {
         version = rootProject.version
         group = rootProject.group
     }
-
-    repositories {
-        maven {
-            name = "bintray"
-            setUrl("https://api.bintray.com/content/mklimczak/kmm-ios-suspendwrapper/ioswrapper-processor/$version/;publish=1;override=0")
-            credentials {
-                //TODO get from env vars in CI process
-                val properties = Properties()
-                properties.load(project.rootProject.file("local.properties").inputStream())
-                username = properties["bintrayUsername"] as String
-                password = properties["bintrayKey"] as String
-            }
-        }
-    }
-
 }
 
 tasks.withType<Test> {
