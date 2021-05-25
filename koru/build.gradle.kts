@@ -2,7 +2,6 @@ plugins {
     kotlin("multiplatform")
     id("java-library")
     id("maven-publish")
-    id("signing")
     id("org.jetbrains.dokka") version "1.4.20"
 }
 
@@ -122,10 +121,10 @@ signing.keyId=
 signing.password=
 signing.secretKeyRingFile=
  */
-publishing {
-    publications.withType<MavenPublication>().all {
-        signing {
-            sign(this@all)
-        }
-    }
-}
+//publishing {
+//    publications.withType<MavenPublication>().all {
+//        signing {
+//            sign(this@all)
+//        }
+//    }
+//}
