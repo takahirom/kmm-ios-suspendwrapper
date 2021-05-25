@@ -64,7 +64,10 @@ class ScopeProviderGenerationTest {
                 """
                     |package com.futuremind.kmm101.test
                     |
-                    |public val exportedScopeProvider_mainScopeProvider: MainScopeProvider = MainScopeProvider()
+                    |import co.touchlab.stately.isolate.IsolateState
+                    |
+                    |public val exportedScopeProvider_mainScopeProvider: IsolateState<MainScopeProvider> =
+                    |    IsolateState<MainScopeProvider>{ MainScopeProvider() }
                 """.trimMargin().trim()
 
     }
@@ -118,9 +121,12 @@ class ScopeProviderGenerationTest {
         val generatedClass = compilationResult.generatedFiles
             .getContentByFilename("ImplicitScopeExample$defaultClassNameSuffix.kt")
 
-        generatedScopeProvider shouldContain "public val exportedScopeProvider_mainScopeProvider: MainScopeProvider = MainScopeProvider()"
-        generatedClass shouldContain "FlowWrapper(exportedScopeProvider_mainScopeProvider, wrapped.flow(whatever))"
-        generatedClass shouldContain "SuspendWrapper(exportedScopeProvider_mainScopeProvider) { wrapped.suspending(whatever) }"
+        generatedScopeProvider shouldContain "public val exportedScopeProvider_mainScopeProvider: IsolateState<MainScopeProvider> =\n" +
+                "    IsolateState<MainScopeProvider>{ MainScopeProvider() }"
+        generatedClass shouldContain "FlowWrapper(scopeProvider,\n" +
+                "      wrapped.flow(whatever))"
+        generatedClass shouldContain "SuspendWrapper(scopeProvider) {\n" +
+                "      wrapped.suspending(whatever) }"
 
     }
 
@@ -174,10 +180,13 @@ class ScopeProviderGenerationTest {
     val generatedClass = compilationResult.generatedFiles
       .getContentByFilename("ImplicitScopeExample$defaultClassNameSuffix.kt")
 
-    generatedScopeProvider shouldContain "public val exportedScopeProvider_mainScopeProvider: MainScopeProvider = MainScopeProvider()"
+    generatedScopeProvider shouldContain "public val exportedScopeProvider_mainScopeProvider: IsolateState<MainScopeProvider> =\n" +
+        "    IsolateState<MainScopeProvider>{ MainScopeProvider() }"
     generatedClass shouldContain "import com.futuremind.kmm101.test.scope.exportedScopeProvider_mainScopeProvider"
-    generatedClass shouldContain "FlowWrapper(exportedScopeProvider_mainScopeProvider, wrapped.flow(whatever))"
-    generatedClass shouldContain "SuspendWrapper(exportedScopeProvider_mainScopeProvider) { wrapped.suspending(whatever) }"
+    generatedClass shouldContain "FlowWrapper(scopeProvider,\n" +
+            "      wrapped.flow(whatever))"
+    generatedClass shouldContain "SuspendWrapper(scopeProvider) {\n" +
+            "      wrapped.suspending(whatever) }"
   }
 
     @Test

@@ -32,6 +32,11 @@ kotlin {
         }
     }
     sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation("co.touchlab:stately-isolate:1.1.1-a1")
+            }
+        }
 
         val jvmMain by getting {
             dependencies {
@@ -46,6 +51,7 @@ kotlin {
                 implementation("com.squareup:kotlinpoet-classinspector-elements:$kotlinpoetVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3-native-mt")
+                implementation("co.touchlab:stately-isolate:1.1.1-a1")
             }
         }
 

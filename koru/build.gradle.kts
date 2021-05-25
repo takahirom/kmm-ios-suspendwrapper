@@ -26,6 +26,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3-native-mt")
+                implementation("co.touchlab:stately-isolate:1.1.1-a1")
             }
         }
         val iosTest by getting {
